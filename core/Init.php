@@ -61,11 +61,23 @@ class Init
             throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
         }
 
+        // 检查输入参数是否符合规范
         if (!$this->checkCmdParam($option)) {
             throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
         }
+
+        // 分发命令行参数
+        $router = new Router();
+        $router->dispatchOption();
     }
 
+    /**
+     * 检查输入参数
+     * @param array $option getopt("h:p:t", ["help"]); 的返回值
+     * @return bool
+     * @throws FrameException
+     * @author lixin
+     */
     private function checkCmdParam(array $option) : bool
     {
         $helpString = "Usage:   php start.php -h HOST -p PORT -t TYPE \n\n";
@@ -79,11 +91,14 @@ class Init
         }
 
         if (isset($option['h']) && isset($option['p']) && isset($option['t'])) {
-            
-            return true;
+            if (LInstance::setStringInstance('h', $option['h'])
+                && LInstance::setStringInstance('p', $option['p'])
+                && LInstance::setStringInstance('t', $option['t'])
+            ) {
+                return true;
+            } else {
+                throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
+            }
         }
-
-        echo $helpString;
-        return false;
     }
 }

@@ -18,20 +18,42 @@ class LInstance
     /**
      * @var array Load实例
      */
-    protected static $_instance;
-
+    private static $_instance;
 
     /**
-     * 获取lib里的类实例
+     * 获取一个类的实例
      * @param string $libClassName 带命名空间的类名
      * @return mixed
      * @author lixin
      */
-    public static function getLib(string $libClassName)
+    public static function getClass(string $libClassName)
     {
         if (!isset(self::$_instance[$libClassName])) {
             self::$_instance[$libClassName] = new $libClassName();
         }
         return self::$_instance[$libClassName];
+    }
+
+    /**
+     * 设置要存储的单例
+     * @param string $key 名字
+     * @param string $value 值
+     * @return bool
+     * @author lixin
+     */
+    public static function setStringInstance(string $key, string $value) : bool
+    {
+        return self::$_instance[$key] = $value;
+    }
+
+    /**
+     * 取出单例中存储的值
+     * @param string $key 名字
+     * @return string
+     * @author lixin
+     */
+    public static function getStringInstance(string $key) : string
+    {
+        return isset(self::$_instance[$key]) ? self::$_instance[$key] : '';
     }
 }
