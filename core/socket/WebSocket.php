@@ -8,15 +8,77 @@
 
 namespace core\socket;
 
+use core\LInstance;
 
-use exception\FrameException;
-
-class WebSocket extends Socket
+class WebSocket implements ISocket
 {
-    public function __construct()
+    /**
+     * @var \swoole_websocket_server
+     */
+    private $_server;
+
+    /**
+     * 链接id
+     * @var array
+     */
+    public static $fds = [];
+
+    /**
+     * WebSocket constructor.
+     * @param string $host
+     * @param int $port
+     * @author lixin
+     */
+    public function __construct(string $host, int $port)
     {
-        if (!extension_loaded('swoole')) {
-            throw new FrameException('Plz install swoole first', 102);
-        }
+        $this->_server = new \swoole_websocket_server($host, $port);
+
+        // 当WebSocket客户端与服务器建立连接并完成握手后会回调此函数
+        $this->_server->on('open', function (\swoole_websocket_server $server, $request) {
+            // 保存链接id
+            self::$fds[] = $request->fd;
+        });
+
+        // 当服务器收到来自客户端的数据帧时会回调此函数
+        $this->_server->on('message', function (\swoole_websocket_server $server, $frame) {
+            $server->push($frame->fd, $frame->data . 'server');
+        });
+
+        // 当服务器收到来自客户端的关闭链接请求时会回调此函数
+        $this->_server->on('close', function (\swoole_websocket_server $server, $fd) {
+            echo "client {$fd} closed\n";
+        });
+
+        echo LInstance::getStringInstance('t') . "\t Listen :" . $host . ':' . $port . "\n";
+    }
+
+    /**
+     * 发送消息
+     * @param int $fd client id
+     * @param string $msg 消息
+     * @author lixin
+     */
+    public function send(int $fd, string $msg)
+    {
+        $this->_server->push($fd, $msg);
+    }
+
+    /**
+     * 关闭链接
+     * @param int $fd client id
+     * @author lixin
+     */
+    public function close(int $fd)
+    {
+        $this->_server->close($fd);
+    }
+
+    /**
+     * 开始监听
+     * @author lixin
+     */
+    public function start()
+    {
+        $this->_server->start();
     }
 }

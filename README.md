@@ -1,5 +1,14 @@
 # Lcmd
 
+## CS通信协议
+使用json传输数据,格式暂定。
+```
+{
+    "action":"test",
+    "controller":index
+}
+```
+
 ## 错误码
 |code|message|
 |:---|:------|

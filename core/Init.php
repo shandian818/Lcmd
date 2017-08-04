@@ -10,7 +10,6 @@ namespace core;
 
 
 use exception\FrameException;
-use lib\CmdOutput;
 
 class Init
 {
@@ -53,10 +52,19 @@ class Init
         return self::$_instance;
     }
 
+    /**
+     * 初始化程序
+     * @throws FrameException
+     * @author lixin
+     */
     public function run()
     {
+        if (!extension_loaded('swoole')) {
+            throw new FrameException('Plz install swoole first', 102);
+        }
+
         // 获取命令行参数
-        $option = getopt("h:p:t", ["help"]);
+        $option = getopt("h:p:t:", ["help"]);
         if (!$option) {
             throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
         }
@@ -65,7 +73,6 @@ class Init
         if (!$this->checkCmdParam($option)) {
             throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
         }
-
         // 分发命令行参数
         $router = new Router();
         $router->dispatchOption();
@@ -97,7 +104,7 @@ class Init
             ) {
                 return true;
             } else {
-                throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
+                return false;
             }
         }
     }

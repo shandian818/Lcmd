@@ -17,7 +17,7 @@ define('BASEDIR', __DIR__);
 try {
     \core\Init::getInstance()->run();
 } catch (\exception\FrameException $fe) {
-    echo $fe->getMessage();
+    echo $fe->getMessage() . "\n";
 }
 
 
