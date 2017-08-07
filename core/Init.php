@@ -9,7 +9,14 @@
 namespace core;
 
 
+use app\model\Test;
+use Dotenv\Dotenv;
 use exception\FrameException;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Container\Container;
+use lib\CmdOutput;
+use lib\Log;
 
 class Init
 {
@@ -73,14 +80,30 @@ class Init
         if (!$this->checkCmdParam($option)) {
             throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
         }
+
+        if (isset($option['help'])) {
+            return true;
+        }
+
+        // 初始化env
+        $dotEnv = new Dotenv(BASEDIR);
+        $dotEnv->load();
+        
+        // 初始化数据库
+        $this->_connMysql();
+
         // 分发命令行参数
         $router = new Router();
+        
+        if (!LInstance::setObjectInstance('router', $router)) {
+            throw new FrameException('Init router fail', 301);
+        }
         $router->dispatchOption();
     }
 
     /**
      * 检查输入参数
-     * @param array $option getopt("h:p:t", ["help"]); 的返回值
+     * @param array $option getopt("h:p:t:", ["help"]); 的返回值
      * @return bool
      * @throws FrameException
      * @author lixin
@@ -108,4 +131,23 @@ class Init
             }
         }
     }
+
+    /**
+     * 初始化数据库
+     * @author lixin
+     */
+    private function _connMysql()
+    {
+        $capsule = new Capsule;
+        $config = Config::getInstance(BASEDIR);
+        foreach ($config['database'] as $key => $value) {
+            $capsule->addConnection($value, $key);
+        }
+
+        $capsule->setEventDispatcher(new Dispatcher(new Container));
+        $capsule->setAsGlobal();
+        $capsule->bootEloquent();
+    }
+
+
 }

@@ -8,6 +8,7 @@
  * Date: 17-8-3
  */
 
+require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/core/Init.php';
 
 //定义根目录
@@ -17,7 +18,7 @@ define('BASEDIR', __DIR__);
 try {
     \core\Init::getInstance()->run();
 } catch (\exception\FrameException $fe) {
-    echo $fe->getMessage() . "\n";
+    \lib\CmdOutput::outputString($fe->getMessage());
 }
 
 

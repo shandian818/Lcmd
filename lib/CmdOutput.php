@@ -103,4 +103,16 @@ class CmdOutput
     {
         return array_keys($this->background_colors);
     }
+
+    /**
+     * 输出
+     * @param string $string
+     * @author lixin
+     */
+    public static function outputString(string $string = '')
+    {
+        $date = date("Y-m-d H:i:s");
+        echo "[{$date}] " . $string . "\n";
+    }
+
 }

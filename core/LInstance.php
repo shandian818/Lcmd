@@ -43,7 +43,7 @@ class LInstance
      */
     public static function setStringInstance(string $key, string $value) : bool
     {
-        return self::$_instance[$key] = $value;
+        return (self::$_instance[$key] = $value) ? true : false;
     }
 
     /**
@@ -55,5 +55,28 @@ class LInstance
     public static function getStringInstance(string $key) : string
     {
         return isset(self::$_instance[$key]) ? self::$_instance[$key] : '';
+    }
+
+    /**
+     * 设置要存储的对象单例
+     * @param string $key 名字
+     * @param ILInstance $value 值
+     * @return bool
+     * @author lixin
+     */
+    public static function setObjectInstance(string $key, ILInstance $value) : bool
+    {
+        return (self::$_instance[$key] = $value) ? true : false;
+    }
+
+    /**
+     * 取出单例中存储的对象
+     * @param string $key 名字
+     * @return ILInstance
+     * @author lixin
+     */
+    public static function getObjectInstance(string $key) : ILInstance
+    {
+        return isset(self::$_instance[$key]) ? self::$_instance[$key] : null;
     }
 }

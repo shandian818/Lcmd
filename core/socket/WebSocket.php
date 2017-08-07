@@ -9,6 +9,8 @@
 namespace core\socket;
 
 use core\LInstance;
+use core\Router;
+use lib\CmdOutput;
 
 class WebSocket implements ISocket
 {
@@ -41,7 +43,9 @@ class WebSocket implements ISocket
 
         // 当服务器收到来自客户端的数据帧时会回调此函数
         $this->_server->on('message', function (\swoole_websocket_server $server, $frame) {
-            $server->push($frame->fd, $frame->data . 'server');
+            // client发送的数据
+            LInstance::setStringInstance('request', $frame->data);
+            LInstance::getObjectInstance('router')->dispatchAction();
         });
 
         // 当服务器收到来自客户端的关闭链接请求时会回调此函数
@@ -49,7 +53,7 @@ class WebSocket implements ISocket
             echo "client {$fd} closed\n";
         });
 
-        echo LInstance::getStringInstance('t') . "\t Listen :" . $host . ':' . $port . "\n";
+        CmdOutput::outputString("Type: " . LInstance::getStringInstance('t') . "\t Listen: " . $host . ':' . $port);
     }
 
     /**
