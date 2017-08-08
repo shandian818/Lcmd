@@ -9,7 +9,6 @@
 namespace core\socket;
 
 use core\LInstance;
-use core\Router;
 use lib\CmdOutput;
 
 class WebSocket implements ISocket
@@ -50,7 +49,7 @@ class WebSocket implements ISocket
 
         // 当服务器收到来自客户端的关闭链接请求时会回调此函数
         $this->_server->on('close', function (\swoole_websocket_server $server, $fd) {
-            echo "client {$fd} closed\n";
+            CmdOutput::outputString("client {$fd} closed");
         });
 
         CmdOutput::outputString("Type: " . LInstance::getStringInstance('t') . "\t Listen: " . $host . ':' . $port);

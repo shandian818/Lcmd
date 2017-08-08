@@ -9,14 +9,11 @@
 namespace core;
 
 
-use app\model\Test;
 use Dotenv\Dotenv;
 use exception\FrameException;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
-use lib\CmdOutput;
-use lib\Log;
 
 class Init
 {

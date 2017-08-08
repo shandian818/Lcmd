@@ -17,11 +17,11 @@ class SocketFactory
      * @param string $host
      * @param int $port
      * @param string $type
-     * @return WebSocket|HttpServer|
+     * @return ISocket
      * @throws FrameException
      * @author lixin
      */
-    public static function createSocket(string $host, int $port, string $type)
+    public static function createSocket(string $host, int $port, string $type) : ISocket
     {
         switch ($type) {
             case 'websocket':
