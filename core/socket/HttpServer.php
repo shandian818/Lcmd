@@ -29,6 +29,10 @@ class HttpServer implements ISocket
     {
         $this->_server = new \swoole_http_server($host, $port);
 
+        $this->_server->set([
+            'http_parse_post' => env('http_parse_post'),
+        ]);
+        
         // 在收到一个完整的http请求后，会回调此函数
         $this->_server->on('request', function (\swoole_http_request $request, \swoole_http_response $response) {
             //TODO 记录http请求 相当于access_log
