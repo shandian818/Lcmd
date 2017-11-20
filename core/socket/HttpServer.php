@@ -8,26 +8,67 @@
  */
 namespace core\socket;
 
+use core\LInstance;
+use exception\FrameException;
+use lib\CmdOutput;
+
 class HttpServer implements ISocket
 {
-    // TODO 
+    /**
+     * @var \swoole_http_server
+     */
+    private $_server;
+
+    /**
+     * HttpServer constructor.
+     * @param string $host
+     * @param int $port
+     * @author lixin
+     */
     public function __construct(string $host, int $port)
     {
+        $this->_server = new \swoole_http_server($host, $port);
 
+        // 在收到一个完整的http请求后，会回调此函数
+        $this->_server->on('request', function (\swoole_http_request $request, \swoole_http_response $response) {
+            //TODO 记录http请求 相当于access_log
+            
+            $response->header("Content-Type", "text/html; charset=utf-8");
+            LInstance::getObjectInstance('router')->dispatchHttpAction($request, $response);
+        });
+        
+        CmdOutput::outputString("Type: " . LInstance::getStringInstance('t') . "\t Listen: " . $host . ':' . $port);
     }
 
+    /**
+     * 发送消息
+     * @param int $fd
+     * @param string $msg
+     * @throws FrameException
+     * @author lixin
+     */
     public function send(int $fd, string $msg)
     {
-        // TODO: Implement send() method.
+        throw new FrameException('HttpServer can not use send function');
     }
 
+    /**
+     * 关闭链接
+     * @param int $fd
+     * @throws FrameException
+     * @author lixin
+     */
     public function close(int $fd)
     {
-        // TODO: Implement close() method.
+        throw new FrameException('HttpServer can not use close function');
     }
 
+    /**
+     * 开始监听
+     * @author lixin
+     */
     public function start()
     {
-        // TODO: Implement start() method.
+        $this->_server->start();
     }
 }

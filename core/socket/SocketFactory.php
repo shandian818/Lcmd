@@ -28,9 +28,11 @@ class SocketFactory
                 return new WebSocket($host, $port);
                 break;
             case 'http':
+                echo "Plz wait for us, we will update soon \n";
                 return new HttpServer($host, $port);
                 break;
             case 'tcp':
+                echo "Plz wait for us, we will update soon \n";
                 return new TcpServer($host, $port);
                 break;
             default:

@@ -44,7 +44,7 @@ class WebSocket implements ISocket
         $this->_server->on('message', function (\swoole_websocket_server $server, $frame) {
             // client发送的数据
             LInstance::setStringInstance('request', $frame->data);
-            LInstance::getObjectInstance('router')->dispatchAction();
+            LInstance::getObjectInstance('router')->dispatchWebSocketAction();
         });
 
         // 当服务器收到来自客户端的关闭链接请求时会回调此函数

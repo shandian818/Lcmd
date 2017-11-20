@@ -52,13 +52,13 @@ class Router implements ILInstance
     }
 
     /**
-     * 分发动作请求
+     * 分发Socket动作请求
      * @author lixin
      */
-    public function dispatchAction()
+    public function dispatchSocketAction()
     {
         $request = $this->_checkParam(json_decode(LInstance::getStringInstance('request'), true));
-        
+
         // 请求中必须有controller和action字段
         if (isset($request['controller']) && !empty($request['controller'])
             && isset($request['action']) && !empty($request['action'])
@@ -67,7 +67,33 @@ class Router implements ILInstance
             $action = $request['action'];
             (new $controller)->$action();
         } else {
-            CmdOutput::outputString("Request fail, miss controller or action. Param: ". $request);
+            CmdOutput::outputString("Request fail, miss controller or action. Param: " . $request);
+        }
+    }
+
+    /**
+     * 分发Http动作请求
+     * @param \swoole_http_request $request
+     * @param \swoole_http_response $response
+     * @author lixin
+     */
+    public function dispatchHttpAction(\swoole_http_request $request, \swoole_http_response $response)
+    {
+        // TODO 检验参数 防止注入
+        
+        $config = Config::getInstance(BASEDIR);
+        if (array_key_exists($request->server['request_uri'], $config['httpRouter'][$request->server['request_method']])) {
+            $params = explode('@', $config['httpRouter'][$request->server['request_method']][$request->server['request_uri']]);
+            $controller = "\\app\\controller\\" . $params[0];
+            $action = $params[1];
+            LInstance::setStringInstance('controller', $params[0]);
+            LInstance::setStringInstance('action', $action);
+            (new $controller)->$action($request, $response);
+        } else {
+            //TODO 记录日志 返回404
+            CmdOutput::outputString("Request fail, miss controller or action. Param: " . $request->server['request_uri']
+                . "\t" . $request->server['request_method']);
+            $response->end("<h1>404, Not Found</h1>");
         }
     }
 
@@ -79,7 +105,7 @@ class Router implements ILInstance
      */
     private function _checkParam(array $requestData) : bool
     {
-        foreach ($requestData as $k => $v){
+        foreach ($requestData as $k => $v) {
             $requestData[$k] = htmlspecialchars($v);
         }
         return $requestData;
