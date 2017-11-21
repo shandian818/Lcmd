@@ -12,6 +12,7 @@ namespace core;
 use core\socket\SocketFactory;
 use exception\FrameException;
 use lib\CmdOutput;
+use lib\Log;
 use lib\ParseParam;
 
 class Router implements ILInstance
@@ -90,7 +91,12 @@ class Router implements ILInstance
             LInstance::setStringInstance('action', $action);
             (new $controller)->$action($request, $response);
         } else {
-            //TODO 记录日志 返回404
+            $log = Log::getLogHandler('Router');
+            $log->warning('Request fail, miss controller or action. ',[
+                'uri'=>$request->server['request_uri'],
+                'request_method'=>$request->server['request_method'],
+            ]);
+         
             CmdOutput::outputString("Request fail, miss controller or action. Param: " . $request->server['request_uri']
                 . "\t" . $request->server['request_method']);
             $response->end("<h1>404, Not Found</h1>");

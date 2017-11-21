@@ -6,8 +6,11 @@
  * Date: 17-5-19
  * Monolog文档:https://github.com/Seldaek/monolog/blob/HEAD/doc/01-usage.md
  * example:
- * $log = new Log('name','warning',Log::FILE);
- * $log->warning('warning');
+ * $log = Log::getLogHandler('Router');
+ * $log->warning('Request fail, miss controller or action. Param:',[
+ *     'uri'=>$request->server['request_uri'],
+ *     'request_method'=>$request->server['request_method'],
+ * ]);
  */
 
 namespace lib;
@@ -17,10 +20,6 @@ use Monolog\Handler\StreamHandler;
 
 class Log
 {
-    /**
-     * @var string 日志中显示的名字
-     */
-    private $_log_name = '';
 
     /**
      * @var Logger
@@ -31,43 +30,24 @@ class Log
      * 日志写文件
      */
     const FILE = 1;
-
-    /**
-     * Log constructor.
-     * @param string $logName 日志中显示的名字
-     * @param int $type 处理日志类型 根据Log类的常量来做判断
-     * @param string $logFileName 日志文件名
-     * @author lixin
-     */
-    public function __construct($logName, $logFileName, $type= self::FILE)
-    {
-        $this->_log_name = $logName;
-        $this->_logger = new Logger($logName);
-
-        if ($type == self::FILE) {
-            $this->logToFile(Logger::INFO, $logFileName);
-        }
-    }
-
+    
     /**
      * 日志写文件
-     * @param int $level 处理级别
+     * @param string $logName 日志中显示的名字
      * @param string $logFileName 日志文件名
+     * @param int $level 日志级别
+     * @param int $type 处理日志类型 根据Log类的常量来做判断
+     * @return Logger
      * @author lixin
-     * @example
      */
-    public function logToFile($level, $logFileName)
+    public static function getLogHandler($logName, $logFileName = 'frame', $level = Logger::INFO, $type= self::FILE)
     {
-        $this->_logger->pushHandler(new StreamHandler(BASEDIR . '/log/'. $logFileName, $level));
-    }
+        $logger = new Logger($logName);
 
-    /**
-     * @param string $name Logger的方法名
-     * @param mixed $arguments 参数
-     * @author lixin
-     */
-    public function __call($name, $arguments)
-    {
-        $this->_logger->$name($arguments);
+        if ($type == self::FILE) {
+            $logger->pushHandler(new StreamHandler(BASEDIR . '/log/'. $logFileName . '.log', $level));
+        }
+        
+        return $logger;
     }
 }

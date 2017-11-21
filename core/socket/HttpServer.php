@@ -11,6 +11,7 @@ namespace core\socket;
 use core\LInstance;
 use exception\FrameException;
 use lib\CmdOutput;
+use lib\Log;
 
 class HttpServer implements ISocket
 {
@@ -35,8 +36,12 @@ class HttpServer implements ISocket
         
         // 在收到一个完整的http请求后，会回调此函数
         $this->_server->on('request', function (\swoole_http_request $request, \swoole_http_response $response) {
-            //TODO 记录http请求 相当于access_log
-            
+            // 记录http请求 相当于nginx的access_log
+            $log = Log::getLogHandler('AccessLog');
+            $log->info('Request fail, miss controller or action. Param:',[
+                'uri'=>$request->server['request_uri'],
+                'request_method'=>$request->server['request_method'],
+            ]);
             $response->header("Content-Type", "text/html; charset=utf-8");
             LInstance::getObjectInstance('router')->dispatchHttpAction($request, $response);
         });
