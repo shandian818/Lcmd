@@ -8,6 +8,7 @@
  */
 namespace core\socket;
 
+use core\Config;
 use core\LInstance;
 use exception\FrameException;
 use lib\CmdOutput;
@@ -85,8 +86,9 @@ class HttpServer implements ISocket
      */
     private function _config()
     {
-        $this->_server->set([
-            'http_parse_post' => env('http_parse_post'),
-        ]);
+        $config = Config::getInstance(BASEDIR);
+        if (!empty($config['swoole']['http'])) {
+            $this->_server->set($config['swoole']['http']);
+        }
     }
 }

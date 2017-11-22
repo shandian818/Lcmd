@@ -8,6 +8,7 @@
 
 namespace core\socket;
 
+use core\Config;
 use core\LInstance;
 use lib\CmdOutput;
 
@@ -34,6 +35,8 @@ class WebSocket implements ISocket
     {
         $this->_server = new \swoole_websocket_server($host, $port);
 
+        $this->_config();
+        
         // 当WebSocket客户端与服务器建立连接并完成握手后会回调此函数
         $this->_server->on('open', function (\swoole_websocket_server $server, $request) {
             // 保存链接id
@@ -83,5 +86,17 @@ class WebSocket implements ISocket
     public function start()
     {
         $this->_server->start();
+    }
+
+    /**
+     * 配置WebSocket
+     * @author lixin
+     */
+    private function _config()
+    {
+        $config = Config::getInstance(BASEDIR);
+        if (!empty($config['swoole']['websocket'])) {
+            $this->_server->set($config['swoole']['websocket']);
+        }
     }
 }
