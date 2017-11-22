@@ -85,13 +85,16 @@ class Init
         // 初始化env
         $dotEnv = new Dotenv(BASEDIR);
         $dotEnv->load();
-        
+
+        // 配置框架
+        $this->_config();
+
         // 初始化数据库
         $this->_connMysql();
 
         // 分发命令行参数
         $router = new Router();
-        
+
         if (!LInstance::setObjectInstance('router', $router)) {
             throw new FrameException('Init router fail', 301);
         }
@@ -148,5 +151,16 @@ class Init
         $capsule->bootEloquent();
     }
 
-
+    /**
+     * 框架配置
+     * @author lixin
+     */
+    private function _config()
+    {
+        if (env('DEBUG')) {
+            error_reporting(E_ALL);
+        } else {
+            error_reporting(0);
+        }
+    }
 }

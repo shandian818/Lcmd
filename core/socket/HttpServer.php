@@ -29,10 +29,8 @@ class HttpServer implements ISocket
     public function __construct(string $host, int $port)
     {
         $this->_server = new \swoole_http_server($host, $port);
-
-        $this->_server->set([
-            'http_parse_post' => env('http_parse_post'),
-        ]);
+        
+        $this->_config();
         
         // 在收到一个完整的http请求后，会回调此函数
         $this->_server->on('request', function (\swoole_http_request $request, \swoole_http_response $response) {
@@ -79,5 +77,16 @@ class HttpServer implements ISocket
     public function start()
     {
         $this->_server->start();
+    }
+
+    /**
+     * 配置WebSocket
+     * @author lixin
+     */
+    private function _config()
+    {
+        $this->_server->set([
+            'http_parse_post' => env('http_parse_post'),
+        ]);
     }
 }
