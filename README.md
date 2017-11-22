@@ -5,6 +5,12 @@
 1. swoole扩展大于等于1.9.11
 2. php版本大于等于7.0.0
 
+## 安装
+1. `composer update`
+2. 修改`.env.example`为`.env`配置文件
+3. `php start.php -h 127.0.0.1 -p 8000 -t tcp`,查看8000端口被监听则成功。
+
+
 ## 启动命令
 ```
 Usage:   php start.php -h HOST -p PORT -t TYPE
