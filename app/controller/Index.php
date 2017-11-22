@@ -10,6 +10,7 @@ namespace app\controller;
 
 
 use core\BaseController;
+use core\socket\ISocket;
 
 class Index extends BaseController
 {
@@ -22,5 +23,16 @@ class Index extends BaseController
     {
         $response->end('Hello world');
         echo "Hello world";
+    }
+
+    /**
+     * @param ISocket $socket
+     * @param \swoole_websocket_frame $frame
+     * @param array $request
+     * @author lixin
+     */
+    public function testWebSocket(ISocket $socket, \swoole_websocket_frame $frame, array $request)
+    {
+        $socket->send($frame->fd, 'hello world');
     }
 }

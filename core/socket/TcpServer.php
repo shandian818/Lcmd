@@ -48,6 +48,7 @@ class TcpServer implements ISocket
         $this->_server->on('receive', function ($server, $fd, $fromId, $data) {
             // client发送的数据
             LInstance::setStringInstance('request', $data);
+            // TODO 分发
             LInstance::getObjectInstance('router')->dispatchSocketAction();
 
         });

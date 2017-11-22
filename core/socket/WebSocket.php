@@ -44,14 +44,14 @@ class WebSocket implements ISocket
         });
 
         // 当服务器收到来自客户端的数据帧时会回调此函数
-        $this->_server->on('message', function (\swoole_websocket_server $server, $frame) {
+        $this->_server->on('message', function (\swoole_websocket_server $server, \swoole_websocket_frame $frame) {
             // client发送的数据
             LInstance::setStringInstance('request', $frame->data);
-            LInstance::getObjectInstance('router')->dispatchSocketAction();
+            LInstance::getObjectInstance('router')->dispatchSocketAction($this, $frame);
         });
 
         // 当服务器收到来自客户端的关闭链接请求时会回调此函数
-        $this->_server->on('close', function (\swoole_websocket_server $server, $fd) {
+        $this->_server->on('close', function (\swoole_websocket_server $server, int $fd) {
             CmdOutput::outputString("client {$fd} closed");
         });
 
