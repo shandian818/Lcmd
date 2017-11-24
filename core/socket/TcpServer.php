@@ -40,20 +40,20 @@ class TcpServer implements ISocket
 
         $this->_config();
 
-        $this->_server->on('connect', function ($server, $fd) {
+        $this->_server->on('connect', function (\swoole_server $server, int $fd, int $fromId) {
             // 保存链接id
-            self::$fds[] = $fd;
+            self::$fds[$fromId] = $fd;
         });
 
-        $this->_server->on('receive', function ($server, $fd, $fromId, $data) {
-            // client发送的数据
-            LInstance::setStringInstance('request', $data);
+        $this->_server->on('receive', function (\swoole_server $server, int $fd, int $fromId, string $data) {
             // TODO 分发
-            LInstance::getObjectInstance('router')->dispatchSocketAction();
-
+            if (!LInstance::getObjectInstance('router')->dispatchTcpAction($this, $fd, $fromId, $data)) {
+                // 未找到路由
+                $this->send($fd, 'Request fail, miss router');
+            }
         });
 
-        $this->_server->on('close', function ($server, $fd) {
+        $this->_server->on('close', function (\swoole_server $server, int $fd, int $fromId) {
             CmdOutput::outputString("client {$fd} closed");
         });
         CmdOutput::outputString("Type: " . LInstance::getStringInstance('t') . "\t Listen: " . $host . ':' . $port);

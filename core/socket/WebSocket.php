@@ -18,12 +18,7 @@ class WebSocket implements ISocket
      * @var \swoole_websocket_server
      */
     private $_server;
-
-    /**
-     * 链接id
-     * @var array
-     */
-    public static $fds = [];
+    
 
     /**
      * WebSocket constructor.
@@ -39,15 +34,16 @@ class WebSocket implements ISocket
         
         // 当WebSocket客户端与服务器建立连接并完成握手后会回调此函数
         $this->_server->on('open', function (\swoole_websocket_server $server, $request) {
-            // 保存链接id
-            self::$fds[] = $request->fd;
+
         });
 
         // 当服务器收到来自客户端的数据帧时会回调此函数
         $this->_server->on('message', function (\swoole_websocket_server $server, \swoole_websocket_frame $frame) {
             // client发送的数据
-            LInstance::setStringInstance('request', $frame->data);
-            LInstance::getObjectInstance('router')->dispatchSocketAction($this, $frame);
+            if (!LInstance::getObjectInstance('router')->dispatchWebSocketAction($this, $frame)) {
+                // 未找到路由
+                $this->send($frame->fd, 'Request fail, miss router');
+            }
         });
 
         // 当服务器收到来自客户端的关闭链接请求时会回调此函数

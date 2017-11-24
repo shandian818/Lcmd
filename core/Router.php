@@ -52,20 +52,22 @@ class Router implements ILInstance
 
         $socket->start();
     }
-
+    
     /**
-     * 分发Socket动作请求
+     * 分发Tcp动作请求
      * @param ISocket $socket
-     * @param \swoole_websocket_frame $frame
+     * @param int $fd
+     * @param int $fromId
+     * @param string $data
      * @return bool
      * @author lixin
      */
-    public function dispatchSocketAction(ISocket $socket, \swoole_websocket_frame $frame)
+    public function dispatchTcpAction(ISocket $socket, int $fd, int $fromId, string $data)
     {
-        $result = json_decode(LInstance::getStringInstance('request'), true);
+        $result = json_decode($data, true);
         if (!$result) {
             CmdOutput::outputString("Request fail, miss controller or action. Param: " .
-                LInstance::getStringInstance('request'));
+                $data);
             return false;
         }
 
@@ -82,17 +84,64 @@ class Router implements ILInstance
                 CmdOutput::outputString("Request fail, miss controller ({$controller}).");
                 return false;
             }
-            
-            $c = new $controller();
+
+            $c = new $controller($socket, $fd, $fromId);
             if (!method_exists($c, $action)) {
                 CmdOutput::outputString("Request fail, miss action ({$action}).");
                 return false;
             }
 
-            $c->$action($socket, $frame, $request);
+            $c->$action($request);
+            return true;
         } else {
             CmdOutput::outputString("Request fail, miss controller or action. Param: "
-                . LInstance::getStringInstance('request'));
+                . $data);
+            return false;
+        }
+    }
+
+    /**
+     * 分发WebSocket动作请求
+     * @param ISocket $socket
+     * @param \swoole_websocket_frame $frame
+     * @return bool
+     * @author lixin
+     */
+    public function dispatchWebSocketAction(ISocket $socket, \swoole_websocket_frame $frame)
+    {
+        $result = json_decode($frame->data, true);
+        if (!$result) {
+            CmdOutput::outputString("Request fail, miss controller or action. Param: " .
+                $frame->data);
+            return false;
+        }
+
+        $request = $this->_checkParam($result);
+
+        // 请求中必须有controller和action字段
+        if (isset($request['controller']) && !empty($request['controller'])
+            && isset($request['action']) && !empty($request['action'])
+        ) {
+            $controller = "\\app\\controller\\" . $request['controller'];
+            $action = $request['action'];
+
+            if (!class_exists($controller)) {
+                CmdOutput::outputString("Request fail, miss controller ({$controller}).");
+                return false;
+            }
+
+            $c = new $controller($socket, $frame);
+            if (!method_exists($c, $action)) {
+                CmdOutput::outputString("Request fail, miss action ({$action}).");
+                return false;
+            }
+
+            $c->$action($request);
+            return true;
+        } else {
+            CmdOutput::outputString("Request fail, miss controller or action. Param: "
+                . $frame->data);
+            return false;
         }
     }
 
