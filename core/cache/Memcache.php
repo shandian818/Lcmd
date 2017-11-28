@@ -6,7 +6,7 @@
  * Date: 17-5-20
  */
 
-namespace cache\core;
+namespace core\cache;
 
 
 use exception\FrameException;

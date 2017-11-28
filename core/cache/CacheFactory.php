@@ -6,8 +6,10 @@
  * Date: 17-5-20
  */
 
-namespace cache\core;
+namespace core\cache;
 
+
+use core\Config;
 
 class CacheFactory
 {
@@ -16,8 +18,7 @@ class CacheFactory
      * @var null
      */
     public static $_handle = null;
-
-
+    
     /**
      * 缓存工厂初始化
      * @param string $type 支持memcache|redis
@@ -35,5 +36,13 @@ class CacheFactory
         } else if ($type == 'redis') {
             self::$_handle['redis'] = new Redis($config);
         }
+    }
+    
+    public static function getRedis()
+    {
+        if (!isset(self::$_handle['redis'])) {
+            self::cacheFactory('redis', Config::getInstance(BASEDIR)['redis']);
+        }
+        return self::$_handle['redis'];
     }
 }

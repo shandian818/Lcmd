@@ -6,7 +6,7 @@
  * Date: 17-5-20
  */
 
-namespace cache\core;
+namespace core\cache;
 
 
 use exception\FrameException;
@@ -47,6 +47,9 @@ class Redis
             $this->_hostLists = array_shift($hostLists);
             $this->_cacheHandle = new \Redis();
             $this->_cacheHandle->connect($this->_hostLists['host'], $this->_hostLists['port']);
+        }
+        if (isset($this->_hostLists['password']) && !empty($this->_hostLists['password'])) {
+            $this->_cacheHandle->auth($this->_hostLists['password']);
         }
 
         //设置序列化默认函数，兼容set函数对数组的支持
@@ -90,7 +93,7 @@ class Redis
      */
     public function __call($name, $arguments)
     {
-        return $this->_cacheHandle->$name($arguments);
+        return call_user_func_array(array($this->_cacheHandle, $name), $arguments);
     }
 
     /**
