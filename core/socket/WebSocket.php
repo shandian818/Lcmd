@@ -63,7 +63,7 @@ class WebSocket implements ISocket
      */
     public function send(int $fd, string $msg) : bool
     {
-        return $this->_server->send($fd, $msg);
+        return $this->_server->push($fd, $msg);
     }
 
     /**
