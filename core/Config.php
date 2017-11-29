@@ -79,7 +79,7 @@ class Config implements \ArrayAccess
      */
     public function offsetSet($key, $value)
     {
-        throw new FrameException("Cannot write config file.Plz modify the configuration by writing profiles.", 201);
+        throw new FrameException("Cannot write config file.Plz modify the configuration by writing profiles.", PERMISSION_ERROR);
 
     }
 
@@ -102,6 +102,6 @@ class Config implements \ArrayAccess
      */
     public function offsetUnset($key)
     {
-        throw new FrameException("Cannot write config file.Plz modify the configuration by writing profiles.", 201);
+        throw new FrameException("Cannot write config file.Plz modify the configuration by writing profiles.", PERMISSION_ERROR);
     }
 }

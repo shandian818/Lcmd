@@ -40,12 +40,12 @@ class Router implements ILInstance
 
         // 检查传参是否有空
         if (empty($host) || empty($port) || empty($type)) {
-            throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
+            throw new FrameException('Plz check you input param, you can use --help to read menu', PARAMS_ERROR);
         }
 
         // 检查ip
         if (!ParseParam::isIp($host)) {
-            throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
+            throw new FrameException('Plz check you input param, you can use --help to read menu', PARAMS_ERROR);
         }
 
         $socket = SocketFactory::createSocket($host, $port, $type);

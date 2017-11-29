@@ -34,7 +34,7 @@ class SocketFactory
                 return new TcpServer($host, $port);
                 break;
             default:
-                throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
+                throw new FrameException('Plz check you input param, you can use --help to read menu', PARAMS_ERROR);
                 break;
         }
     }

@@ -64,18 +64,18 @@ class Init
     public function run()
     {
         if (!extension_loaded('swoole')) {
-            throw new FrameException('Plz install swoole first', 102);
+            throw new FrameException('Plz install swoole first', EXTENSION_ERROR);
         }
 
         // 获取命令行参数
         $option = getopt("h:p:t:", ["help"]);
         if (!$option) {
-            throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
+            throw new FrameException('Plz check you input param, you can use --help to read menu', PARAMS_ERROR);
         }
 
         // 检查输入参数是否符合规范
         if (!$this->checkCmdParam($option)) {
-            throw new FrameException('Plz check you input param, you can use --help to read menu', 101);
+            throw new FrameException('Plz check you input param, you can use --help to read menu', PARAMS_ERROR);
         }
 
         if (isset($option['help'])) {
@@ -96,7 +96,7 @@ class Init
         $router = new Router();
 
         if (!LInstance::setObjectInstance('router', $router)) {
-            throw new FrameException('Init router fail', 301);
+            throw new FrameException('Init router fail', PROGRAM_ERROR);
         }
         $router->dispatchOption();
     }
