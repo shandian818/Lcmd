@@ -63,30 +63,43 @@ class TcpServer implements ISocket
      * 发送消息
      * @param int $fd
      * @param string $msg
+     * @return bool
      * @author lixin
      */
-    public function send(int $fd, string $msg)
+    public function send(int $fd, string $msg) : bool
     {
-        $this->_server->send($fd, $msg);
+        return $this->_server->send($fd, $msg);
     }
 
     /**
      * 关闭链接
      * @param int $fd
+     * @return bool
      * @author lixin
      */
-    public function close(int $fd)
+    public function close(int $fd) : bool
     {
-        $this->_server->close($fd);
+        return $this->_server->close($fd);
     }
 
     /**
      * 开始监听
+     * @return bool
      * @author lixin
      */
-    public function start()
+    public function start() : bool
     {
-        $this->_server->start();
+        return $this->_server->start();
+    }
+
+    /**
+     * 返回所有链接
+     * @return mixed
+     * @author lixin
+     */
+    public function getConnections()
+    {
+        return $this->_server->connections;
     }
 
     /**
