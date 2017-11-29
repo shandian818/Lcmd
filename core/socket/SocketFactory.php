@@ -10,6 +10,7 @@ namespace core\socket;
 
 
 use exception\FrameException;
+use lib\Code;
 
 class SocketFactory
 {
@@ -34,7 +35,7 @@ class SocketFactory
                 return new TcpServer($host, $port);
                 break;
             default:
-                throw new FrameException('Plz check you input param, you can use --help to read menu', PARAMS_ERROR);
+                throw new FrameException('Plz check you input param, you can use --help to read menu', Code::PARAMS_ERROR);
                 break;
         }
     }
